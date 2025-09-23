@@ -11,6 +11,7 @@
 #include <fstream>
 #include "definition.h"
 #include "production.h"
+#include "random.h"
 using namespace std;
 
 /**
@@ -35,6 +36,7 @@ static void readGrammar(ifstream& infile, map<string, Definition>& grammar)
     if (infile.eof()) return;  // true? we encountered EOF before we saw a '{': no more productions!
     infile.putback('{');
     Definition def(infile);
+    cout << def.getNonterminal() << endl;
     grammar[def.getNonterminal()] = def;
   }
 }
@@ -74,6 +76,27 @@ int main(int argc, char *argv[])
   readGrammar(grammarFile, grammar);
   cout << "The grammar file called \"" << argv[1] << "\" contains "
        << grammar.size() << " definitions." << endl;
+
+  auto start_grammar = grammar.find("<start>");
+  cout << start_grammar ->first << endl;
+ 
+  auto definition = start_grammar->second;
+  cout << definition.getNonterminal() << endl;
+  auto production = definition.getRandomProduction();
+
+  // for(auto current_production = production.begin(); current_production != production.end(); ++current_production) {
+  //   cout << *current_production << endl;
+  // }
+
+  // for (auto current_grammar = grammar.begin(); current_grammar != grammar.end(); ++current_grammar) {
+  //   cout << current_grammar->first << endl;
+  //   Definition definition = current_grammar->second;
+  //   auto production = definition.getRandomProduction();
+
+  //   for(auto current_production = production.begin(); current_production != production.end(); ++current_production) {
+  //     cout << *current_production << endl;
+  //   }
+  // }
   
   return 0;
 }
