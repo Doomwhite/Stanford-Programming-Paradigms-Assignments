@@ -41,7 +41,7 @@ static void readGrammar(ifstream& infile, map<string, Definition>& grammar)
   }
 }
 
-inline static bool checkKeyExists(map<string, Definition> grammar, std::string key)
+inline static bool checkKeyExists(const std::map<std::string, Definition>& grammar, const std::string& key)
 {
   return grammar.find(key) != grammar.end();
 }
