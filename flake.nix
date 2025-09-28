@@ -22,18 +22,22 @@
       # Schemas tell Nix about the structure of your flake's outputs
       schemas = flake-schemas.schemas;
 
-      # Development environments
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
           # Pinned packages available in the environment
           packages = with pkgs; [
             nixpkgs-fmt
+            gnumake
           ];
-
-          # Environment variables
-          env = {
-            gnumake = "nixpkgs#gnumake";
-          };
+      
+          # Dynamically generate env.nu
+          # shellHook = let
+          #   envNu = pkgs.writeText "env.nu" ''
+          #     $env.PATH = ($env.PATH | split row (char path_sep))
+          #   '';
+          # in ''
+          #   exec ${pkgs.nushell}/bin/nu --env-config ${envNu}
+          # '';
         };
       });
     };

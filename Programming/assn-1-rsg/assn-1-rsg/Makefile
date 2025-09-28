@@ -35,3 +35,9 @@ clean :
 
 TAGS : $(SRCS) $(HDRS)
 	etags -t $(SRCS) $(HDRS)
+
+run-excuse: $(PROGS)
+	./$(PROGS) grammars/excuse.g
+
+run-haiku: $(PROGS)
+	./$(PROGS) grammars/haiku.g

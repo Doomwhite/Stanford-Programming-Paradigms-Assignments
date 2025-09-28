@@ -36,8 +36,42 @@ static void readGrammar(ifstream& infile, map<string, Definition>& grammar)
     if (infile.eof()) return;  // true? we encountered EOF before we saw a '{': no more productions!
     infile.putback('{');
     Definition def(infile);
-    cout << def.getNonterminal() << endl;
+    // cout << def.getNonterminal() << endl;
     grammar[def.getNonterminal()] = def;
+  }
+}
+
+static bool checkKeyExists(map<string, Definition> grammar, std::string key)
+{
+  return grammar.find(key) != grammar.end();
+}
+
+static void printGrammar(map<string, Definition> grammar, std::string search_key)
+{
+  std::map<std::string, Definition>::iterator definition_tuple = grammar.find(search_key);
+ 
+  Definition definition = definition_tuple->second;
+  Production random_production = definition.getRandomProduction();
+
+  for (auto &&key : random_production)
+  {
+    if (key == "/") {
+      cout << endl;
+    } else if (key == "-") {
+      cout << endl << " - ";
+    } else {
+      if (checkKeyExists(grammar, key)) {
+        printGrammar(grammar, key);
+      } else {
+        size_t comma_position = key.find(",");
+        size_t dot_position = key.find(".");
+        if (comma_position != 0 && dot_position != 0) {
+          cout << " " << key;
+        } else {
+          cout << key;
+        }
+      }
+    }
   }
 }
 
@@ -74,29 +108,15 @@ int main(int argc, char *argv[])
   // things are looking good...
   map<string, Definition> grammar;
   readGrammar(grammarFile, grammar);
-  cout << "The grammar file called \"" << argv[1] << "\" contains "
-       << grammar.size() << " definitions." << endl;
 
-  auto start_grammar = grammar.find("<start>");
-  cout << start_grammar ->first << endl;
- 
-  auto definition = start_grammar->second;
-  cout << definition.getNonterminal() << endl;
-  auto production = definition.getRandomProduction();
-
-  // for(auto current_production = production.begin(); current_production != production.end(); ++current_production) {
-  //   cout << *current_production << endl;
-  // }
-
-  // for (auto current_grammar = grammar.begin(); current_grammar != grammar.end(); ++current_grammar) {
-  //   cout << current_grammar->first << endl;
-  //   Definition definition = current_grammar->second;
-  //   auto production = definition.getRandomProduction();
-
-  //   for(auto current_production = production.begin(); current_production != production.end(); ++current_production) {
-  //     cout << *current_production << endl;
-  //   }
-  // }
+  for (size_t i = 1; i <= 3; i++)
+  {
+    cout << endl;
+    cout << "Version " << i << " ---------------" << endl;
+    cout << "\t";
+    printGrammar(grammar, "<start>");
+    cout << endl;
+  }
   
   return 0;
 }
