@@ -6,7 +6,7 @@
  * and map classes as well as the custom Production and Definition
  * classes provided with the assignment.
  */
- 
+
 #include <map>
 #include <fstream>
 #include "definition.h"
@@ -28,50 +28,62 @@ using namespace std;
  *                to their definitions.
  */
 
-static void readGrammar(ifstream& infile, map<string, Definition>& grammar)
+static void readGrammar(ifstream &infile, map<string, Definition> &grammar)
 {
-  while (true) {
+  while (true)
+  {
     string uselessText;
     getline(infile, uselessText, '{');
-    if (infile.eof()) return;  // true? we encountered EOF before we saw a '{': no more productions!
+    if (infile.eof())
+      return; // true? we encountered EOF before we saw a '{': no more productions!
     infile.putback('{');
     Definition def(infile);
-    // cout << def.getNonterminal() << endl;
     grammar[def.getNonterminal()] = def;
   }
 }
 
-inline static bool checkKeyExists(const std::map<std::string, Definition>& grammar, const std::string& key)
+inline static bool checkKeyExists(const std::map<std::string, Definition> &grammar, const std::string &key)
 {
   return grammar.find(key) != grammar.end();
+}
+
+const std::string NEWLINE_TOKEN = "/";
+const std::string DASH_TOKEN = "-";
+
+inline static bool needsSpaceBefore(const std::string& key) {
+    return key.find(",") != 0 && key.find(".") != 0;
 }
 
 static void printGrammar(map<string, Definition> grammar, std::string search_key)
 {
   std::map<std::string, Definition>::iterator definition_tuple = grammar.find(search_key);
-  if (definition_tuple == grammar.end()) return;
+  if (definition_tuple == grammar.end())
+    return;
 
   Definition definition = definition_tuple->second;
   Production random_production = definition.getRandomProduction();
 
   for (auto &&key : random_production)
   {
-    if (key == "/") {
+    if (key == NEWLINE_TOKEN)
+    {
       cout << endl;
-    } else if (key == "-") {
-      cout << endl << " - ";
-    } else {
-      if (checkKeyExists(grammar, key)) {
-        printGrammar(grammar, key);
-      } else {
-        size_t comma_position = key.find(",");
-        size_t dot_position = key.find(".");
-        if (comma_position != 0 && dot_position != 0) {
-          cout << " " << key;
-        } else {
-          cout << key;
-        }
-      }
+      continue;
+    }
+    if (key == DASH_TOKEN)
+    {
+      cout << endl
+           << " - ";
+      continue;
+    }
+
+    if (checkKeyExists(grammar, key))
+    {
+      printGrammar(grammar, key);
+    }
+    else
+    {
+      cout << (needsSpaceBefore(key) ? " " : "") << key;
     }
   }
 }
@@ -94,18 +106,20 @@ static void printGrammar(map<string, Definition> grammar, std::string search_key
 
 int main(int argc, char *argv[])
 {
-  if (argc == 1) {
+  if (argc == 1)
+  {
     cerr << "You need to specify the name of a grammar file." << endl;
     cerr << "Usage: rsg <path to grammar text file>" << endl;
-    return 1; // non-zero return value means something bad happened 
+    return 1; // non-zero return value means something bad happened
   }
-  
+
   ifstream grammarFile(argv[1]);
-  if (grammarFile.fail()) {
+  if (grammarFile.fail())
+  {
     cerr << "Failed to open the file named \"" << argv[1] << "\".  Check to ensure the file exists. " << endl;
     return 2; // each bad thing has its own bad return value
   }
-  
+
   // things are looking good...
   map<string, Definition> grammar;
   readGrammar(grammarFile, grammar);
@@ -118,6 +132,6 @@ int main(int argc, char *argv[])
     printGrammar(grammar, "<start>");
     cout << endl;
   }
-  
+
   return 0;
 }
