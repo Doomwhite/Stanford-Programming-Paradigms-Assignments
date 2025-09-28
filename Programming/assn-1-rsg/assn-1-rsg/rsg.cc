@@ -49,7 +49,8 @@ inline static bool checkKeyExists(const std::map<std::string, Definition>& gramm
 static void printGrammar(map<string, Definition> grammar, std::string search_key)
 {
   std::map<std::string, Definition>::iterator definition_tuple = grammar.find(search_key);
- 
+  if (definition_tuple == grammar.end()) return;
+
   Definition definition = definition_tuple->second;
   Production random_production = definition.getRandomProduction();
 
